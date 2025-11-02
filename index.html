@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Curso Pacote Office</title>
+ <style> body { font-family: Arial, sans-serif; background-color:#f7f7f7; text-align:center; padding:50px; } h1 { color:#333; margin-bottom:30px; } .container { display:flex; justify-content:center; flex-wrap:wrap; gap:30px; } .icon { background:white; border-radius:15px; box-shadow:0 3px 6px rgba(0,0,0,0.1); padding:20px; width:220px; cursor:pointer; transition:0.3s; display:flex; flex-direction:column; align-items:center; } .icon:hover { transform:scale(1.03); box-shadow:0 6px 12px rgba(0,0,0,0.18); } .icon img { width:100px; height:auto; object-fit:contain; margin-bottom:10px; } .icon p { margin:0; font-weight:bold; color:#6b2180; } /* modal */.modal { display:none; position:fixed; z-index:50; left:0; top:0; width:100%; height:100%; background-color:rgba(0,0,0,0.6); justify-content:center; align-items:center; } .modal-content { background:white; padding:18px; border-radius:12px; width:90%; max-width:760px; box-shadow:0 0 12px rgba(0,0,0,0.3); text-align:center; } .modal video { width:100%; border-radius:8px; } .close-btn, .nav-btn { background:#0056b3; color:white; border:none; border-radius:8px; padding:8px 14px; margin:10px 6px; cursor:pointer; } .close-btn { background:crimson; } .titulo-aula { font-size:18px; font-weight:700; margin-bottom:10px; } .contador { color:gray; font-size:14px; margin-top:6px; } </style> </head> <body></body>
+</head>
+<body>
+
+  <h1>Curso Pacote Office</h1>
+
+  <!-- Container com ID — o script vai inserir os cards aqui -->
+  <div class="container" id="aulasContainer"></div>
+
+  <!-- Modal -->
+<div id="videoModal" class="modal" aria-hidden="true">
+  <div class="modal-content">
+    <div class="titulo-aula" id="tituloAula"></div>
+    <iframe id="videoPlayer" width="100%" height="400" frameborder="0" allowfullscreen></iframe>
+    <div class="contador" id="contadorAula"></div>
+    <div>
+      <button class="nav-btn" onclick="aulaAnterior()">◀ Anterior</button>
+      <button class="close-btn" onclick="fecharVideo()">Fechar</button>
+      <button class="nav-btn" onclick="proximaAula()">Próxima ▶</button>
+    </div>
+  </div>
+</div>
+
+
+
+<script>
+/* --- Dados das aulas: caminhos locais (confirme nomes exatos) --- */
+const aulas = [
+  {
+    titulo: "Aula 1 – Word",
+    video: "https://www.youtube.com/embed/muKbeMsLVzs?si=EilbVoxYrtSkq161",
+    icon: "./imagens/word.png.png"
+  },
+  {
+    titulo: "Aula 2 – Excel",
+    video: "https://www.youtube.com/embed/h9D6dCAkWFY?si=Vq8x1uclJnhoUZL",
+    icon: "./imagens/excel.png.png"
+  },
+  {
+    titulo: "Aula 3 – PowerPoint",
+    video: "https://www.youtube.com/embed/uJ3o1E9v5lI?si=--znnHFMWf1sU4Q",
+    icon: "./imagens/powerpoint.png.png"
+  }
+];
+
+
+
+const container = document.getElementById("aulasContainer");
+const modal = document.getElementById("videoModal");
+const videoPlayer = document.getElementById("videoPlayer");
+const tituloAula = document.getElementById("tituloAula");
+const contadorAula = document.getElementById("contadorAula");
+
+let indiceAtual = 0;
+
+/* --- cria os cards dinamicamente --- */
+aulas.forEach((aula, index) => {
+  const card = document.createElement("div");
+  card.classList.add("icon");
+
+  const img = document.createElement("img");
+  img.src = aula.icon;           // usa 'icon' exatamente como no array
+  img.alt = aula.titulo;
+  img.onerror = () => { img.style.display = 'none'; console.warn('Imagem não carregou:', aula.icon); };
+
+  const p = document.createElement("p");
+  p.textContent = aula.titulo;
+
+  card.appendChild(img);
+  card.appendChild(p);
+
+  // Ao clicar no card abre o modal
+  card.addEventListener("click", () => abrirVideo(index));
+
+  container.appendChild(card);
+});
+
+/* --- funções do player/modal --- */
+function abrirVideo(indice) {
+  indiceAtual = indice;
+  const aula = aulas[indice];
+  videoPlayer.src = aula.video;       // caminho do vídeo (confirme nomes)
+  tituloAula.textContent = aula.titulo;
+  contadorAula.textContent = `Aula ${indice + 1} de ${aulas.length}`;
+  modal.style.display = "flex";
+  modal.setAttribute('aria-hidden','false');
+}
+
+function fecharVideo() {
+  modal.style.display = "none";
+  modal.setAttribute('aria-hidden','true');
+  videoPlayer.src = ""; // limpa o vídeo
+
+}
+
+function proximaAula() {
+  if (indiceAtual < aulas.length - 1) abrirVideo(indiceAtual + 1);
+}
+
+function aulaAnterior() {
+  if (indiceAtual > 0) abrirVideo(indiceAtual - 1);
+}
+
+/* fechar ao clicar fora do conteúdo */
+window.onclick = function(event) {
+  if (event.target === modal) fecharVideo();
+}
+
+/* útil: log de erros no carregamento do vídeo */
+videoPlayer.addEventListener('error', (e) => {
+  console.error('Erro ao carregar vídeo:', e);
+  alert('Não foi possível carregar o vídeo. Verifique se o arquivo existe e o caminho está correto.');
+});
+</script>
+
+</body>
+</html>
